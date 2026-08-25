@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -13,7 +14,7 @@ public class Jugador : MonoBehaviour
     RaycastHit hit;
 
     // Estados
-    float contador_dash, cooldownDash;
+    float contador_dash, cooldownDash, alturaActual;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -25,17 +26,19 @@ public class Jugador : MonoBehaviour
         rotacion = Vector3.zero;
         animator = this.GetComponentInChildren<Animator>();
         // Application.targetFrameRate = 30;
-
         //Estados
         contador_dash = 0;
         cooldownDash = 0;
+        
     }
 
     // Update is called once per frame
     void Update()
     {
         velocidad.y -= 130 * Time.deltaTime;
+        alturaActual = velocidad.y;
         contador_dash -= Time.deltaTime;
+        cooldownDash -= Time.deltaTime;
         velocidad.x = playerInput.actions["Move"].ReadValue<Vector2>().x * 10;
         is_grounded -= Time.deltaTime;
         if (characterController.isGrounded)
@@ -59,7 +62,10 @@ public class Jugador : MonoBehaviour
             }
             else
             {
-                animator.Play("Jugador_Caminando");
+                if(contador_dash <= 0)
+                {
+                    animator.Play("Jugador_Caminando");
+                }
             }
             velocidad.y = -1;
 
@@ -77,32 +83,37 @@ public class Jugador : MonoBehaviour
             {
                 velocidad.y += 40 * Time.deltaTime;
             }
-            if (velocidad.y < -20)
+            if (contador_dash <= 0)
             {
-                animator.Play("Jugador_EmpezarCaida");
+                if (velocidad.y < -20)
+                {
+                    animator.Play("Jugador_EmpezarCaida");
+                }
+                else if (velocidad.y < 0)
+                {
+                    animator.Play("JugadorCaida");
+                }
             }
-            else if (velocidad.y < 0)
-            {
-                animator.Play("JugadorCaida");
-            }
+
             if (playerInput.actions["Jump"].WasPressedThisFrame() && salto_restante > 0)
             {
                 velocidad.y = 30;
                 salto_restante--;
                 animator.Play("doble_salto");
-            }
+            } 
         }
         if (contador_dash <= 0)
         {
             velocidad.x = playerInput.actions["Move"].ReadValue<Vector2>().x * 4;
-            
+            //animator.Play("doble_salto");
         }
         if (playerInput.actions["Sprint"].WasPressedThisFrame())
         {
+            
             Debug.Log("Dash y su disfrash");
             contador_dash = 0.3f;
         }
-        cooldownDash -= Time.deltaTime;
+        
         if(contador_dash > 0)
         { 
             if (cooldownDash <= 0)
@@ -110,14 +121,22 @@ public class Jugador : MonoBehaviour
                 if (rotacion.y == 0)
                 {
                     velocidad.x = 20;
+
                 }
                 else
                 {
                     velocidad.x = -20;
                 }
-                cooldownDash = 0.3f;
+                //cooldownDash = 0.5f;
+                velocidad.y = 0;
+                if (velocidad.x != 0)
+                {
+                    animator.Play("Jugador_dash");
+                }
+
             }
-            
+            //transform.position = new Vector3(transform.position.x, alturaActual,transform.position.z);
+            //velocidad.y = 0;
         }
         characterController.Move(velocidad * Time.deltaTime);
         this.transform.rotation = Quaternion.Euler(rotacion);
@@ -134,6 +153,7 @@ public class Jugador : MonoBehaviour
         {
             //Debug.Log("No le di no le diiiiiiiiiiiii");
         }
-        
+        //Debug.Log(animator.GetCurrentAnimatorClipInfo(0)[0].clip.name);
+
     }
 }
