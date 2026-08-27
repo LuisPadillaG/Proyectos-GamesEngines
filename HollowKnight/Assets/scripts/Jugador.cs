@@ -12,9 +12,13 @@ public class Jugador : MonoBehaviour
     int salto_restante;
     float is_grounded;
     RaycastHit hit;
-
     // Estados
-    float contador_dash, cooldownDash, alturaActual;
+    float contador_dash, cooldownDash;
+
+    //Ataque
+    float contadorAtaque;
+    [SerializeField] public GameObject prefabHitBoxAtaque;
+    [SerializeField] Transform lugarCreacionHitBoxAtaque;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -29,14 +33,13 @@ public class Jugador : MonoBehaviour
         //Estados
         contador_dash = 0;
         cooldownDash = 0;
-        
+        contadorAtaque = 0;
     }
 
     // Update is called once per frame
     void Update()
     {
-        velocidad.y -= 130 * Time.deltaTime;
-        alturaActual = velocidad.y;
+        velocidad.y -= 130 * Time.deltaTime; 
         contador_dash -= Time.deltaTime;
         cooldownDash -= Time.deltaTime;
         velocidad.x = playerInput.actions["Move"].ReadValue<Vector2>().x * 10;
@@ -58,11 +61,11 @@ public class Jugador : MonoBehaviour
             }
             if (velocidad.x == 0)
             {
-                animator.Play("Jugador_Idle");
+                if (contadorAtaque <= 0) { animator.Play("Jugador_Idle"); }
             }
             else
             {
-                if(contador_dash <= 0)
+                if (contador_dash <= 0 && contadorAtaque <= 0)
                 {
                     animator.Play("Jugador_Caminando");
                 }
@@ -83,7 +86,7 @@ public class Jugador : MonoBehaviour
             {
                 velocidad.y += 40 * Time.deltaTime;
             }
-            if (contador_dash <= 0)
+            if (contador_dash <= 0 && contadorAtaque <= 0)
             {
                 if (velocidad.y < -20)
                 {
@@ -140,7 +143,17 @@ public class Jugador : MonoBehaviour
         }
         characterController.Move(velocidad * Time.deltaTime);
         this.transform.rotation = Quaternion.Euler(rotacion);
-
+        // ================= ataque
+        if (playerInput.actions["Attack"].WasPressedThisFrame())
+        {
+            if (contadorAtaque <= 0) {
+                animator.Play("Jugador_ataque");
+                contadorAtaque = 0.2f;
+                Instantiate(prefabHitBoxAtaque, lugarCreacionHitBoxAtaque.position, Quaternion.identity);
+            }
+            
+        }
+        contadorAtaque -= Time.deltaTime;
         Debug.DrawRay(this.transform.position + Vector3.up, Vector3.up *1.6f, Color.blue);
 
         if(Physics.Raycast(this.transform.position + new Vector3(0, 0, 0.5f), Vector3.up * 0.2f, out hit, 1.5f))
@@ -155,5 +168,12 @@ public class Jugador : MonoBehaviour
         }
         //Debug.Log(animator.GetCurrentAnimatorClipInfo(0)[0].clip.name);
 
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.gameObject.tag == "Dano")
+        {
+            Destroy(this.gameObject);
+        }
     }
 }
