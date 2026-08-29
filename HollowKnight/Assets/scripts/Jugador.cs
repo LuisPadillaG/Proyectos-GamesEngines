@@ -14,11 +14,16 @@ public class Jugador : MonoBehaviour
     RaycastHit hit;
     // Estados
     float contador_dash, cooldownDash;
-
+    float contadorInvisible;
     //Ataque
     float contadorAtaque;
     [SerializeField] public GameObject prefabHitBoxAtaque;
     [SerializeField] Transform lugarCreacionHitBoxAtaque;
+    [SerializeField] JugadorDestello jugadorDestello;
+    int VIDA;
+    float tiempoInvulnerable;
+    float valorMaximoJugadorDestello;
+    float danoMovimientoX;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -34,15 +39,45 @@ public class Jugador : MonoBehaviour
         contador_dash = 0;
         cooldownDash = 0;
         contadorAtaque = 0;
+        VIDA = 5;
+        contadorInvisible = 0;
+        tiempoInvulnerable = 0;
+        valorMaximoJugadorDestello = 1.5f;
+        danoMovimientoX = 0;
     }
 
     // Update is called once per frame
     void Update()
     {
+        contadorInvisible -= Time.deltaTime; 
+
+        if (contadorInvisible > 0)
+        { 
+            float intervalo = 0.1f; 
+            int estado = Mathf.FloorToInt(contadorInvisible / intervalo);
+
+            if (estado % 2 == 0)
+            {
+                jugadorDestello.SemiDestello();
+            }
+            else
+            {
+                jugadorDestello.NuloDestello();
+            }
+        }
+        else
+        {
+            jugadorDestello.NuloDestello();
+        }
+
+
+
         velocidad.y -= 130 * Time.deltaTime; 
         contador_dash -= Time.deltaTime;
         cooldownDash -= Time.deltaTime;
-        velocidad.x = playerInput.actions["Move"].ReadValue<Vector2>().x * 10;
+        if (danoMovimientoX != 0) {
+            velocidad.x = playerInput.actions["Move"].ReadValue<Vector2>().x * 10;
+        }
         is_grounded -= Time.deltaTime;
         if (characterController.isGrounded)
         {
@@ -141,6 +176,24 @@ public class Jugador : MonoBehaviour
             //transform.position = new Vector3(transform.position.x, alturaActual,transform.position.z);
             //velocidad.y = 0;
         }
+        if(danoMovimientoX > 0)
+        {
+            Debug.Log(danoMovimientoX);
+            danoMovimientoX -= Time.deltaTime * 10;
+            if(danoMovimientoX < 0)
+            {
+                danoMovimientoX = 0;
+            } 
+        }
+        if (danoMovimientoX < 0)
+        {
+            Debug.Log(danoMovimientoX);
+            danoMovimientoX += Time.deltaTime * 10;
+            if (danoMovimientoX > 0)
+            {
+                danoMovimientoX = 0;
+            }
+        }
         characterController.Move(velocidad * Time.deltaTime);
         this.transform.rotation = Quaternion.Euler(rotacion);
         // ================= ataque
@@ -159,7 +212,7 @@ public class Jugador : MonoBehaviour
         if(Physics.Raycast(this.transform.position + new Vector3(0, 0, 0.5f), Vector3.up * 0.2f, out hit, 1.5f))
         {
             Debug.Log(hit.collider.gameObject.name); //rayo, colision, el objeto, el nombre
-            Debug.Log("Le di a algo");
+            //Debug.Log("Le di a algo");
             velocidad.y -= 1;
         }
         else
@@ -171,9 +224,22 @@ public class Jugador : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-        if(other.gameObject.tag == "Dano")
+        if (other.gameObject.tag == "Dano" && contadorInvisible <= 0)
         {
-            Destroy(this.gameObject);
+            contadorInvisible = jugadorDestello.ActivarDestello();
+            valorMaximoJugadorDestello = contadorInvisible;
+            VIDA--;
+            if (other.gameObject.transform.position.x > this.transform.position.x) {
+                danoMovimientoX = -5;
+            }
+            else
+            {
+                danoMovimientoX = 5;
+            }
+            velocidad.y = 30;
+            velocidad.x = danoMovimientoX;
+            //characterController.Move(Vector3.up * 0.5f);
+            if (VIDA <= 0) { Destroy(this.gameObject); }
         }
     }
 }

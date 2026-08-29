@@ -152,6 +152,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Jugador
   prefabHitBoxAtaque: {fileID: 1380954895982205093, guid: 2ea112007ecbb8c408377414bb8affa6, type: 3}
   lugarCreacionHitBoxAtaque: {fileID: 1787301011}
+  jugadorDestello: {fileID: 1463163174}
 --- !u!114 &218896480
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -890,6 +891,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::JugadorDestello
   jugadorSpriteRenderer: {fileID: 329052188}
+  prefabDestello: {fileID: 2536611762232063375, guid: ad6fb0a5cdb79f449839f7ae0f6950a8, type: 3}
 --- !u!212 &1463163175
 SpriteRenderer:
   serializedVersion: 2
