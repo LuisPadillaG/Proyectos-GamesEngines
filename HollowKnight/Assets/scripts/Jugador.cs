@@ -24,6 +24,8 @@ public class Jugador : MonoBehaviour
     float tiempoInvulnerable;
     float valorMaximoJugadorDestello;
     float danoMovimientoX;
+    JugadorVibracion jugadorvibracion;
+    public bool PoderMoverse;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -44,6 +46,8 @@ public class Jugador : MonoBehaviour
         tiempoInvulnerable = 0;
         valorMaximoJugadorDestello = 1.5f;
         danoMovimientoX = 0;
+        PoderMoverse = true;
+        //jugadorvibracion = this.GetComponent<JugadorVibracion>();
     }
 
     // Update is called once per frame
@@ -109,10 +113,14 @@ public class Jugador : MonoBehaviour
 
             if (playerInput.actions["Jump"].WasPressedThisFrame())
             {
-                Debug.Log("Saltaaaaa");
-                velocidad.y = 30;
-                is_grounded = 0;
-                animator.Play("Jugador_Saltar");
+                if (PoderMoverse)
+                {
+                    Debug.Log("Saltaaaaa");
+                    velocidad.y = 30;
+                    is_grounded = 0;
+                    animator.Play("Jugador_Saltar");
+                }
+                
             }
         }
         else
@@ -140,7 +148,7 @@ public class Jugador : MonoBehaviour
                 animator.Play("doble_salto");
             } 
         }
-        if (contador_dash <= 0)
+        if (contador_dash <= 0 && PoderMoverse)
         {
             velocidad.x = playerInput.actions["Move"].ReadValue<Vector2>().x * 4;
             //animator.Play("doble_salto");
@@ -240,6 +248,7 @@ public class Jugador : MonoBehaviour
             velocidad.x = danoMovimientoX;
             //characterController.Move(Vector3.up * 0.5f);
             if (VIDA <= 0) { Destroy(this.gameObject); }
+            jugadorvibracion.recibirDano();
         }
     }
 }
