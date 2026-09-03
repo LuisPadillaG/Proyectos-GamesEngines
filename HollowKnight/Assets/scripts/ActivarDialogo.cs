@@ -1,45 +1,75 @@
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 public class ActivarDialogo : MonoBehaviour
 {
-    [SerializeField] GameObject letreroHablar;
-    PlayerInput playerInput;
-    SistemaDialogo sistemaDialogos;
-    Jugador scriptJugador;
 
-    [SerializeField] string[] dialogos;
+    [SerializeField] GameObject LetreroHablar;
+    PlayerInput playerInput;
+    Jugador scriptJugador;
+    SistemaDialogo sistemaDialogos;
+    [SerializeField] string[] Dialogos;
+    public int dialogoActual;
+    public bool leyendoDialogo;
+    [SerializeField] string Nombre;
+    public UnityEvent onDialogoTerminado;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        letreroHablar.SetActive(false);
+        scriptJugador = GameObject.FindWithTag("Player").GetComponent<Jugador>();
+        LetreroHablar.SetActive(false);
         playerInput = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerInput>();
         sistemaDialogos = GameObject.Find("SistemaDialogos").GetComponent<SistemaDialogo>();
-        scriptJugador = GameObject.Find("SistemaDialogos").GetComponent<Jugador>();
+        dialogoActual = 0;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
     }
+
+
     private void OnTriggerEnter(Collider other)
     {
-        letreroHablar.SetActive(true);
-        Debug.Log("Dile q tu eres mia, mia tu sabe que ere mia, MIA : " + other.gameObject.tag);
-
+        Debug.Log("te toqué te toca");
+        LetreroHablar.SetActive(true);
     }
+
     private void OnTriggerExit(Collider other)
     {
-        letreroHablar.SetActive(false);
+        Debug.Log("pq te tatuatis");
+        LetreroHablar.SetActive(false);
     }
     private void OnTriggerStay(Collider other)
     {
-        if (playerInput.actions["Move"].ReadValue<Vector2>().y > 0.5)
+        if (!leyendoDialogo)
         {
-            sistemaDialogos.MostrarDialogos();
-            scriptJugador.PoderMoverse = false;
+            if (playerInput.actions["Move"].ReadValue<Vector2>().y > 0.5f)
+            {
+                sistemaDialogos.MostrarDialogos(Dialogos[dialogoActual], Nombre, this);
+                scriptJugador.PoderMoverse = false;
+                Debug.Log("sPEAKING");
+                leyendoDialogo = true;
+            }
         }
+    }
+    public void TerminoDialogoActual()
+    {
+        Debug.Log("Termine");
+        if (dialogoActual < Dialogos.Length - 1)
+        {
+            dialogoActual++;
+            sistemaDialogos.MostrarDialogos(Dialogos[dialogoActual], Nombre, this);
+        }
+        else
+        {
+            Debug.Log("Aquitermino todo ");
+            leyendoDialogo = false;
+            LetreroHablar.SetActive(false);
+            scriptJugador.PoderMoverse=true;
+            onDialogoTerminado.Invoke();
+        }
+        
     }
 }
