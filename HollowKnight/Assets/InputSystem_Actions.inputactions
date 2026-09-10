@@ -64,7 +64,7 @@
                     "name": "Previous",
                     "type": "Button",
                     "id": "2776c80d-3c14-4091-8c56-d04ced07a2b0",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -82,6 +82,15 @@
                     "name": "Sprint",
                     "type": "Button",
                     "id": "641cd816-40e6-41b4-8c3d-04687c349290",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Hechizo",
+                    "type": "Button",
+                    "id": "912eac49-3ac7-42df-baeb-9daf0016247b",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -322,11 +331,11 @@
                 },
                 {
                     "name": "",
-                    "id": "2eb475b6-bf67-406a-8812-b2aa8c9e191a",
-                    "path": "<Keyboard>/k",
+                    "id": "987e846a-0297-4562-9fa9-a614240d7639",
+                    "path": "<Keyboard>/x",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Keyboard&Mouse",
+                    "groups": ";Keyboard&Mouse",
                     "action": "Attack",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -388,11 +397,22 @@
                 },
                 {
                     "name": "",
-                    "id": "1a65e66f-8d7d-45bc-b18e-bff25ab34cf1",
-                    "path": "<Keyboard>/v",
+                    "id": "3ea7bf7c-f503-49cf-9219-a4f0eacb64b6",
+                    "path": "<Keyboard>/c",
                     "interactions": "",
                     "processors": "",
-                    "groups": ";Keyboard&Mouse",
+                    "groups": "",
+                    "action": "Sprint",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4bd5774b-2dc2-4c6d-8a78-c0dacf78a0a8",
+                    "path": "<Gamepad>/leftTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
                     "action": "Sprint",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -493,6 +513,28 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "Crouch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "296f81ef-21b0-4fd8-b6b4-cb8f2c7b5019",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Hechizo",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ddd29075-63c7-47e1-a790-156beee4f2c3",
+                    "path": "<Gamepad>/buttonWest",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "Hechizo",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
