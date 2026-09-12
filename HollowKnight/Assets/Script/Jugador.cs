@@ -30,6 +30,9 @@ public class Jugador : MonoBehaviour
     JugadorVibracion jugadorVibracion;
     public bool PoderMoverse;
 
+    //pared
+    int estadoPared;
+    float velocidadParedX;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -47,7 +50,7 @@ public class Jugador : MonoBehaviour
         cooldawnDash = 0;
         contadorAtaque = 0;
         contadorCaidavengativo = 0;
-
+        estadoPared = 0;
         vida = 5;
         timepoInv = 0;
         DanoMovX = 0;
@@ -58,13 +61,17 @@ public class Jugador : MonoBehaviour
         jugadorVibracion = this.GetComponent<JugadorVibracion>();
         
         PoderMoverse = true;
+        velocidadParedX = 0;
     }
 
     // Update is called once per frame
     void Update()
     {
-        velocidad.y -= 60 * Time.deltaTime;
-
+        //gravedad
+        if (estadoPared == 0)
+        {
+            velocidad.y -= 60 * Time.deltaTime;
+        }
         //playerInput.actions["Move"].ReadValue<Vector2>();
         if (contadorDash <= 0)
         {
@@ -117,7 +124,7 @@ public class Jugador : MonoBehaviour
             velocidad.y = -1;
             if (playerInput.actions["Jump"].WasPressedThisFrame() )
             {
-                if(PoderMoverse)
+                if(PoderMoverse && estadoPared == 0)
                 {
                     velocidad.y = 10;
                     is_graunded = 0;
@@ -127,11 +134,13 @@ public class Jugador : MonoBehaviour
         }
         else
         {
-            if (playerInput.actions["Jump"].IsPressed())
-            {
-                velocidad.y += 40 * Time.deltaTime;
+            //estadoPared = 0;
+            if (estadoPared == 0) {
+                if (playerInput.actions["Jump"].IsPressed())
+                {
+                    velocidad.y += 40 * Time.deltaTime;
+                }
             }
-            
             if(contadorAtaque <= 0)
             {
                 if (velocidad.y < -1)
@@ -146,7 +155,7 @@ public class Jugador : MonoBehaviour
             
             if (playerInput.actions["Jump"].WasPressedThisFrame())
             {
-                if (saltos_restantes > 0)
+                if (saltos_restantes > 0 && estadoPared == 0)
                 {
                     velocidad.y = 14;
                     saltos_restantes--;
@@ -187,6 +196,9 @@ public class Jugador : MonoBehaviour
                     velocidad.x = -20;
                 }
                 cooldawnDash = 0.3f;
+
+                velocidadParedX = 0;
+                estadoPared = 0;
             }
 
         }
@@ -227,7 +239,43 @@ public class Jugador : MonoBehaviour
                 DanoMovX = 0;
             }
         }
-
+        if (Physics.Raycast(this.transform.position + Vector3.up * 0.5f, Vector3.left, 0.35f) && is_graunded <= 0)
+        {
+            if (estadoPared == 0) {
+                if (velocidad.y < 0)
+                {
+                    velocidad.y = 0;
+                }
+                saltos_restantes = 1;
+            }
+            estadoPared = 1;
+        }
+        else
+        {
+            estadoPared = 0;
+        }
+        switch (estadoPared)
+        {
+            case 1:
+                animator.Play("Jugador_Pared");
+                velocidad.y -= 20 * Time.deltaTime;
+                if (playerInput.actions["Jump"].WasPressedThisFrame() && PoderMoverse)
+                {
+                    velocidad.y = 7;
+                    velocidadParedX = 10;
+                    characterController.Move(Vector3.right * 0.5f);
+                    animator.Play("Jugador_Saltar");
+                }
+                velocidad.x = velocidadParedX;
+                break;
+            case 2:
+                break;
+        }
+        if (velocidadParedX > 0)
+        {
+            velocidad.x = velocidadParedX;
+            velocidadParedX -= 20 * Time.deltaTime;
+        }
         characterController.Move(velocidad * Time.deltaTime);
         this.transform.rotation = Quaternion.Euler(rotacion);
         /*characterController.Move(Vector3.down);
