@@ -1369,6 +1369,7 @@ GameObject:
   - component: {fileID: 802402282}
   - component: {fileID: 802402284}
   - component: {fileID: 802402285}
+  - component: {fileID: 802402286}
   m_Layer: 2
   m_Name: HollowKnight0002
   m_TagString: Untagged
@@ -1484,6 +1485,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14266f9a4ec46d94e9802faa27224fda, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Tiempoinbulnerale
+--- !u!111 &802402286
+Animation:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 802402281}
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Animation: {fileID: 0}
+  m_Animations: []
+  m_WrapMode: 0
+  m_PlayAutomatically: 1
+  m_AnimatePhysics: 0
+  m_UpdateMode: 0
+  m_CullingType: 0
 --- !u!1 &815100519
 GameObject:
   m_ObjectHideFlags: 0
